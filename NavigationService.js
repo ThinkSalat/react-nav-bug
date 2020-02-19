@@ -1,42 +1,44 @@
 import { NavigationActions, StackActions } from 'react-navigation';
+import { createRef } from 'react';
 
-const config = {};
+export const isMountedRef = createRef()
+export const navigationRef = createRef();
+
 
 export function setNavigator(nav) {
-  if (nav && !config.navigator) {
-    config.navigator = nav;
+	console.info(navigationRef);
+  if (nav && !navigationRef.current) {
+    navigationRef.current = nav;
     console.log('Set Navigator')
   }
 }
 
 export function push(routeName, params) {
-  if (config.navigator && routeName) {
+  if (routeName && isMountedRef.current && navigationRef.current) {
     const action = StackActions.push({ routeName, params })
-    config.navigator.dispatch(action)
+    navigationRef.current.dispatch(action)
     console.log('PUSH to', routeName)
   }
 }
-
+ 
 export function navigate(routeName, params) {
-  if (config.navigator && routeName) {
+  if (routeName && isMountedRef.current && navigationRef.current) {
 		const action = NavigationActions.navigate({ routeName, params });
-    config.navigator.dispatch(action);
+    navigationRef.current.dispatch(action);
     console.log('NAVIGATE to', routeName)
-  } else {
-		console.info('navigation failed, config.navigator or routname not provided', {config, routeName, params});
-	}
+  }
 }
 
 export function goBack(params = {}) {
-  if (config.navigator) {
+  if (isMountedRef.current && navigationRef.current) {
 		const action = NavigationActions.back(params);
-    config.navigator.dispatch(action);
+    navigationRef.current.dispatch(action);
     console.log('goBACK NAV')
   }
 }
 
 export function resetStack(index, routeName, params) {
-  if (config.navigator) {
+  if (isMountedRef.current && navigationRef.current) {
     // const actions = routes.map( action => () => NavigationActions.navigate({ routeName: action.routeName, params: action.params }))
     const reset = StackActions.reset({
       index,
@@ -44,13 +46,13 @@ export function resetStack(index, routeName, params) {
         NavigationActions.navigate({ routeName, params }),
       ],
     })
-    config.navigator.dispatch(reset)
+    navigationRef.current.dispatch(reset)
     console.log('RESET STACK Navigator', routeName)
   }
 }
 
 export function handleNavigationOptions(navObject) {
-  if (navObject) {
+  if (navObject && isMountedRef.current && navigationRef.current) {
     switch (navObject.command) {
       case 'push':
         push(navObject.routeName, navObject)

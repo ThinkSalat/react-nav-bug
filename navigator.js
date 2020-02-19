@@ -10,11 +10,6 @@ export const screens = {
 	Bill,
 }
 
-
-
-
-
-
 const MainNavigator = createStackNavigator(
   screens,
 	{
